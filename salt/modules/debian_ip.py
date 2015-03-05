@@ -1187,7 +1187,7 @@ def _parse_settings_eth(opts, iface_type, enabled, iface):
         if bonding:
             opts.pop('mode', None)
             iface_data['inet']['bonding'] = bonding
-            iface_data['inet']['bonding']['slaves'] =  " ".join([interface['network'] for interface in opts['slaves']])
+            iface_data['inet']['bonding']['slaves'] =  opts['slaves']
             iface_data['inet']['bonding_keys'] = sorted(bonding)
 
     elif iface_type == 'slave':
@@ -1401,9 +1401,9 @@ def _write_file_ifaces(iface, data):
     for adapter in adapters:
         if 'type' in adapters[adapter] and adapters[adapter]['type'] == 'slave':
             # Override values so the interfaces file is correct
-            adapters[adapter]['enabled'] = False
             adapters[adapter]['data']['inet']['addrfam'] = 'inet'
             adapters[adapter]['data']['inet']['proto'] = 'manual'
+            adapters[adapter]['data']['inet']['master'] = adapters[adapter]['master']
 
         tmp = template.render({'name': adapter, 'data': adapters[adapter]})
         ifcfg = tmp + ifcfg
